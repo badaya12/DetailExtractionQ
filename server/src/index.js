@@ -1,35 +1,3 @@
-// const express = require('express');
-// // import mongoose from "mongoose";
-
-// const app = express();
-
-// // import {  } from "@google-cloud/vision";
-// const { ImageAnnotatorClient } = require('@google-cloud/vision');
-
-// async function detectText(fileName) {
-//   try {
-//     const client = new ImageAnnotatorClient({
-//         keyFilename:'credential.json',
-//     });
-
-//     // Read the image file into a Buffer
-//     const [result] = await client.textDetection(fileName);
-//     const detections = result.textAnnotations;
-
-//     console.log('Text:');
-//     detections.forEach((text) => console.log(text.description));
-
-//     return detections;
-//   } catch (error) {
-//     console.error('An error occurred:', error);
-//   }
-// }
-
-// const fileName = 't1.png';
-// detectText(fileName);
-
-// backend/server.js
-
 const express = require('express');
 const { ImageAnnotatorClient } = require('@google-cloud/vision');
 const cors = require('cors');
