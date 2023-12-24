@@ -36,6 +36,7 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { extractDetails } = require('./components/Extract-details');
 const app = express();
 const PORT = process.env.PORT || 3001;
 // const vision = new Vision({ keyFilename: '[PATH_TO_JSON_KEY_FILE]' });
@@ -44,18 +45,10 @@ const PORT = process.env.PORT || 3001;
 // app.use(express.json()); // Automatically parses JSON in the request body
 app.use(cors()); // Enable CORS for all routes
 
-// app.use('/uploads', express.static('uploads'));
+
 const upload = multer({dest:path.join(__dirname, 'uploads')});
 
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, '/uploads'); // Specify the directory where uploaded files will be stored
-//   },
-//   filename: function (req, file, cb) {
-//     // Generate a unique filename
-//     cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
-//   },
-// });
+
 
 // Vision API endpoint
 app.post('/Extract-text',upload.single('image'), async (req, res) => {
@@ -77,19 +70,18 @@ app.post('/Extract-text',upload.single('image'), async (req, res) => {
       image: {
         content: base64ImageData,
       },
+      imageContext: {
+        languageHints: ['en'], // Set the language hint to English and Numbers
+      },
     });
     // const [result] = await client.textDetection(absolutePath);
    
    
-    console.log(req.file.path);
+    // console.log(req.file.path);
     const detections = result.textAnnotations;
-
-
-    // const { filePath } = req.body; // Assuming you send the filePath from the frontend
-    // const [result] = await vision.textDetection({ source: { filename: filePath } });
-    // const detections = result.textAnnotations;
-    console.log(detections);
-    res.json({ detections });
+    const data = await extractDetails(detections[0]);
+    // console.log(RecognizedAttributes);
+    res.json(data);
   } catch (error) {
     console.error('Error analyzing image:', error);
     res.status(500).json({ error: 'An error occurred while analyzing the image.' });
