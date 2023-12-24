@@ -5,14 +5,18 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { extractDetails } = require('./components/Extract-details');
+const mongoose = require('mongoose');
 const app = express();
 const PORT = process.env.PORT || 3001;
+const IDCard = require('./models/IDcard');
+const { timeStamp } = require('console');
+
 // const vision = new Vision({ keyFilename: '[PATH_TO_JSON_KEY_FILE]' });
 
 // Middleware
 // app.use(express.json()); // Automatically parses JSON in the request body
 app.use(cors()); // Enable CORS for all routes
-
+mongoose.connect("mongodb+srv://manan19badaya6:4veb3bqzfqZBXzy7@detail-extraction.hogp1fu.mongodb.net/")
 
 const upload = multer({dest:path.join(__dirname, 'uploads')});
 
@@ -48,13 +52,70 @@ app.post('/Extract-text',upload.single('image'), async (req, res) => {
     // console.log(req.file.path);
     const detections = result.textAnnotations;
     const data = await extractDetails(detections[0]);
-    // console.log(RecognizedAttributes);
+    const currentTimestamp = new Date();
+    const options = { timeZone: 'Asia/Kolkata' }; // 'Asia/Kolkata' is the timezone for IST
+
+    const istDateTime = currentTimestamp.toLocaleString('en-IN', options);
+    data.timeStamp = istDateTime;
+    const newIDcard = IDCard(data);
+      newIDcard.save()
+    .then(doc => {
+      console.log(doc);
+    })
+    .catch(error => {
+      console.error(error);
+    });
     res.json(data);
   } catch (error) {
     console.error('Error analyzing image:', error);
+    const currentTimestamp = new Date();
+    const options = { timeZone: 'Asia/Kolkata' }; // 'Asia/Kolkata' is the timezone for IST
+
+    const istDateTime = currentTimestamp.toLocaleString('en-IN', options);
+    
+    const newIDcard = IDCard({
+      error:"error occurred while analyzing the image",
+      timeStamp: istDateTime,
+      success: false
+    })
+    newIDcard.save()
+    .then(doc => {
+      console.log(doc);
+    })
+    .catch(error => {
+      console.error(error);
+    });
     res.status(500).json({ error: 'An error occurred while analyzing the image.' });
   }
 });
+
+app.get("/getData", async (req, res) => {
+  try {
+    const data = await IDCard.find({});
+    res.json({data});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post("/updateData",async(req,res)=>{
+  try{const data = req.data;
+  const _id = data._id;
+  const result = await IDCard.updateOne(
+      { _id },
+      { $set: data}
+    );
+    if (result.nModified === 1) {
+      res.status(200).json({ message: "Document updated successfully" });
+    } else {
+      res.status(404).json({ error: "Document not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+})
 
 // Start the server
 app.listen(PORT, () => {
