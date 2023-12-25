@@ -1,0 +1,29 @@
+[33mcommit a49c1dea9112bc0627d2538e3ec216df507e585f[m[33m ([m[1;36mHEAD -> [m[1;32mknowledge-extraction[m[33m)[m
+Author: Manan Badaya <manan19badaya6@gmail.com>
+Date:   Mon Dec 25 10:47:55 2023 +0530
+
+    Display,update features enabled
+
+[33mcommit f1e48f8caa61367dc991e982eaaf6edb67b5a1b1[m
+Author: Manan Badaya <manan19badaya6@gmail.com>
+Date:   Mon Dec 25 01:32:47 2023 +0530
+
+    Fetch and display of OCRData
+
+[33mcommit 49caf1047fcb9bff83fd1a50ec92e248d6a755fe[m
+Author: Manan Badaya <manan19badaya6@gmail.com>
+Date:   Sun Dec 24 22:31:14 2023 +0530
+
+    Some minor updates with front-end
+
+[33mcommit 078a53569a36bda02d8927dea14011ccc365eb8b[m
+Author: Manan Badaya <manan19badaya6@gmail.com>
+Date:   Sun Dec 24 19:18:09 2023 +0530
+
+    Basic Logic for Details
+
+[33mcommit 8d2011b7a5fc0be73f61fb70d2deb88006a39c0f[m[33m ([m[1;32mmaster[m[33m)[m
+Author: Manan Badaya <manan19badaya6@gmail.com>
+Date:   Sun Dec 24 12:22:03 2023 +0530
+
+    Text Extraction

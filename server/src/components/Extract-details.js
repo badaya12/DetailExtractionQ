@@ -1,11 +1,14 @@
 async function extractDetails(detections){
     
+    console.log(detections);
     const text = detections.description;
     console.log(text);
     text.replace((/[^a-zA-Z0-9 ]/g, ''));
-    const dateRegex = /\b\d{1,2}\s*(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s*\d{2,4}\b/g;
+
 
 // Extract dates from the text using the regular expression
+    // const dateRegex = /\b\d{1,2}\s*(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s*\d{2,4}\b/g;
+    const dateRegex = /\b\d{1,2}\s*(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?,?\s*\d{2,4}\b/g;
     const extractedDates = text.match(dateRegex) || [];
     const dateObjects = extractedDates.map((dateString) => new Date(dateString.replace('.', '')));
 
@@ -20,18 +23,14 @@ async function extractDetails(detections){
     return `${day} ${month}. ${year}`;
     });
 
-    // console.log('Sorted Dates:', sortedDates);
-
-    // const identification_num = extractIdentification(detections);
-    const numericValueRegex  = /\b(\d(?:\s*\d{1,12})?)\b/;
-
+    
+    const numericValueRegex = /\b(\d(?:\s*\d)*)\b/;
 
 // Extract the numeric value using the regular expression
     const match = text.match(numericValueRegex);
 
 // Extracted numeric value
     const identification_num = match ? match[1] : null;
-
     
     const nameToLastRegex = /Name\s([^]+?)(?=\s+Last|$)/i;
 
@@ -40,12 +39,16 @@ async function extractDetails(detections){
 
     // Extract words after "Name" until the last word is seen, excluding the word "Last"
     const nameToLastMatch = text.match(nameToLastRegex);
-    const Name = nameToLastMatch ? nameToLastMatch[1] : null;
+    let Name = nameToLastMatch ? nameToLastMatch[1] : null;
 
-    // Extract a single word after "Last name"
-    const lastNameMatch = text.match(lastNameRegex);
-    const LastName = lastNameMatch ? lastNameMatch[1] : null;
+// Extract a single word after "Last name"
+const lastNameMatch = text.match(lastNameRegex);
+const LastName = lastNameMatch ? lastNameMatch[1] : null;
 
+if (Name === null) {
+    const titleMatch = text.match(/\b(?:Mr\.?|Mrs\.?|Ms\.?|Dr\.?|Miss)\s+(\w+)\b/i);
+    Name = titleMatch ? titleMatch[0] : null;
+}   
 
 
 if(sortedDates.length=== 3 && Name != null && LastName != null && identification_num != null)
@@ -65,22 +68,6 @@ return {
     DOB : sortedDates[0],
     DataOfIssue : sortedDates[1],
     DateOfExpiry : sortedDates[2]  
-}
-
-async function extractIdentification(text)
-{
-     // Regular expression to match the first numeric value with gaps (up to 13 digits)
-    // const numericValueRegex = /\b(\d(?:\s*\d+)*)\b/;
-    const numericValueRegex  = /\b(\d(?:\s*\d{1,12})?)\b/;
-
-
-// Extract the numeric value using the regular expression
-    const match = text.match(numericValueRegex);
-
-// Extracted numeric value
-    const identification_num = match ? match[1] : null;
-
-    return identification_num;
 }
 
 }

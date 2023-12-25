@@ -9,9 +9,9 @@ const mongoose = require('mongoose');
 const app = express();
 const PORT = process.env.PORT || 3001;
 const IDCard = require('./models/IDcard');
-const { timeStamp } = require('console');
 const bodyParser = require('body-parser');
-const { ObjectId } = require('mongodb');
+const { timeStamp } = require('console');
+
 // const vision = new Vision({ keyFilename: '[PATH_TO_JSON_KEY_FILE]' });
 
 // Middleware
@@ -100,32 +100,24 @@ app.get("/getData", async (req, res) => {
   }
 });
 
-
-app.post('/updateData', async (req, res) => {
-  const updatedData = req.body;
-  console.log(updatedData);
+app.post("/updateData",async(req,res)=>{
+   const Updateddata = req.body;
   try {
-    
-    const documentId = updatedData._id;
-    console.log(documentId);
     const result = await IDCard.findByIdAndUpdate(
-      documentId,
-      {
-        Name:updatedData.Name
-      },
+      Updateddata._id,
+      Updateddata,
       { new: true }
     );
+  
     if (result) {
-      res.status(200).json({ message: "Document updated successfully" });
-      console.log(result);
+      console.log("Update successful:", result);
     } else {
-      res.status(404).json({ error: "Document not found" });
+      console.log("Document not found or update did not occur.");
     }
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error during update:", error.message);
   }
-});
+})
 
 // Start the server
 app.listen(PORT, () => {
