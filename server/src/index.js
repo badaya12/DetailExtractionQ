@@ -10,14 +10,15 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const IDCard = require('./models/IDcard');
 const { timeStamp } = require('console');
-
+const bodyParser = require('body-parser');
+const { ObjectId } = require('mongodb');
 // const vision = new Vision({ keyFilename: '[PATH_TO_JSON_KEY_FILE]' });
 
 // Middleware
 // app.use(express.json()); // Automatically parses JSON in the request body
 app.use(cors()); // Enable CORS for all routes
 mongoose.connect("mongodb+srv://manan19badaya6:4veb3bqzfqZBXzy7@detail-extraction.hogp1fu.mongodb.net/")
-
+app.use(bodyParser.json());
 const upload = multer({dest:path.join(__dirname, 'uploads')});
 
 
@@ -99,15 +100,24 @@ app.get("/getData", async (req, res) => {
   }
 });
 
-app.post("/updateData",async(req,res)=>{
-  try{const data = req.data;
-  const _id = data._id;
-  const result = await IDCard.updateOne(
-      { _id },
-      { $set: data}
+
+app.post('/updateData', async (req, res) => {
+  const updatedData = req.body;
+  console.log(updatedData);
+  try {
+    
+    const documentId = updatedData._id;
+    console.log(documentId);
+    const result = await IDCard.findByIdAndUpdate(
+      documentId,
+      {
+        Name:updatedData.Name
+      },
+      { new: true }
     );
-    if (result.nModified === 1) {
+    if (result) {
       res.status(200).json({ message: "Document updated successfully" });
+      console.log(result);
     } else {
       res.status(404).json({ error: "Document not found" });
     }
@@ -115,7 +125,7 @@ app.post("/updateData",async(req,res)=>{
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
   }
-})
+});
 
 // Start the server
 app.listen(PORT, () => {
